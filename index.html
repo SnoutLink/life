@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>目录结构分析器</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .drop-area {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            transition: all 0.3s;
+        }
+        .drop-area.highlight {
+            border-color: #007bff;
+            background-color: #e9f7fe;
+        }
+        pre {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .loading {
+            display: none;
+        }
+        .folder-structure {
+            text-align: left;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .analysis-result {
+            text-align: left;
+            border-left: 4px solid #007bff;
+            padding-left: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <h1 class="mb-4 text-center">目录结构分析器</h1>
+        <p class="text-center mb-4">上传文件夹或拖放文件夹到下方区域，使用AI分析目录结构并猜测其用途</p>
+        
+        <div class="row mb-4">
+            <div class="col-md-8 offset-md-2">
+                <div class="drop-area" id="dropArea">
+                    <p class="mb-2">拖放文件夹到这里</p>
+                    <p>或</p>
+                    <label class="btn btn-primary">
+                        选择文件夹
+                        <input type="file" id="folderInput" webkitdirectory directory multiple style="display: none;">
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">设置</h5>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="modelSelect" class="form-label">AI模型</label>
+                            <select class="form-select" id="modelSelect">
+                                <option value="qwen/qwen3-235b-a22b:free" selected>Qwen 3 (235B)</option>
+                                <option value="google/gemini-2.5-pro-preview-03-25">Google Gemini 2.5 Pro</option>
+                                <option value="anthropic/claude-3-opus:2024-08-07">Claude 3 Opus</option>
+                                <option value="anthropic/claude-3-haiku:2024-08-07">Claude 3 Haiku</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="depthInput" class="form-label">递归深度</label>
+                            <input type="number" class="form-control" id="depthInput" value="2" min="1" max="10">
+                        </div>
+                        <div class="mb-0">
+                            <label for="ignorePatterns" class="form-label">忽略模式 (用逗号分隔)</label>
+                            <input type="text" class="form-control" id="ignorePatterns" placeholder="node_modules,.git,.DS_Store">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-10 offset-md-1" id="resultsSection" style="display: none;">
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">文件夹结构</h5>
+                    </div>
+                    <div class="card-body">
+                        <pre class="folder-structure" id="folderStructure"></pre>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">AI分析结果</h5>
+                        <div class="loading" id="loadingIndicator">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                <span class="visually-hidden">加载中...</span>
+                            </div>
+                            <span class="ms-2">分析中...</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="analysis-result" id="analysisResult"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html> 
