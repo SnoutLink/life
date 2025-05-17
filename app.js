@@ -186,6 +186,11 @@ ${formattedStructure}
             loadingIndicator.style.display = 'flex';
             analysisResult.textContent = '';
 
+            // 加载marked.js库
+            if (!window.marked) {
+                await loadScript('https://cdn.jsdelivr.net/npm/marked/marked.min.js');
+            }
+
             const response = await fetch('https://zheng.2020classes4.dpdns.org', {
                 method: 'POST',
                 headers: {
@@ -204,11 +209,23 @@ ${formattedStructure}
             });
 
             const data = await response.json();
-            analysisResult.textContent = data.choices[0].message.content;
+            // 使用marked将Markdown转换为HTML
+            analysisResult.innerHTML = marked.parse(data.choices[0].message.content);
         } catch (error) {
             analysisResult.textContent = '分析过程中发生错误: ' + error.message;
         } finally {
             loadingIndicator.style.display = 'none';
         }
+    }
+
+    // 加载外部脚本的辅助函数
+    function loadScript(url) {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = url;
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
     }
 }); 
